@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""
-TeXファイルからTikZ図を抽出して、standalone ファイルとして保存
-自動ラベル検出対応
+r"""
+Extract TikZ figures from TeX file and save as standalone files.
+Supports automatic label detection.
 """
 
 import re

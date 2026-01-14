@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""
-TeXファイルをpandoc変換用に前処理するスクリプト (v4)
-アプローチ: \\ab(...)のパターンを正規表現で直接置換
+Preprocess TeX file for pandoc conversion (v4).
+Approach: Direct regex replacement of \\ab(...) patterns.
 """
 
 import re
