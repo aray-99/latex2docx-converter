@@ -4,6 +4,10 @@
 
 形式は [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/) を参考にしつつ、厳密にはこだわりません。
 
+## [Unreleased]
+
+- TBD
+
 ## [v0.2.0] - 2026-01-15
 
 ### Added
@@ -24,3 +28,5 @@
 ---
 
 [v0.2.0]: https://github.com/aray-99/latex2docx-converter/releases/tag/v0.2.0
+
+[Unreleased]: https://github.com/aray-99/latex2docx-converter/compare/v0.2.0...HEAD
