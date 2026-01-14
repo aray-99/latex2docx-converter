@@ -1,28 +1,9 @@
-# Python Package Requirements
-# ============================
-# This project uses only Python standard library modules.
-# No additional Python packages are required.
-
-# However, the following system-level dependencies are required:
-# - texlive-latex-base (provides pdflatex)
-# - texlive-latex-extra (TikZ, pgfplots, etc.)
-# - imagemagick (provides convert command)
-# - pandoc (LaTeX to DOCX conversion)
-
-# Installation instructions:
-# Ubuntu/Debian:
-#   sudo apt-get update
-#   sudo apt-get install texlive-latex-base texlive-latex-extra imagemagick pandoc
+# Runtime dependencies
+# ====================
+# This project has no Python runtime dependencies (standard library only).
 #
-# macOS (Homebrew):
-#   brew install --cask mactex
-#   brew install imagemagick pandoc
+# Development dependencies:
+#   pip install -r requirements-dev.txt
 #
-# Arch Linux:
-#   sudo pacman -S texlive-core texlive-latexextra imagemagick pandoc
-
-# Optional development dependencies (for future enhancements):
-# pytest>=7.0.0          # Testing framework
-# black>=22.0.0          # Code formatting
-# mypy>=0.990            # Type checking
-# pylint>=2.15.0         # Code quality
+# System dependencies (LaTeX/ImageMagick/Pandoc) are documented in:
+#   .github/SYSTEM_REQUIREMENTS.md
