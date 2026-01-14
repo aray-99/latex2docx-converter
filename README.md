@@ -1,34 +1,57 @@
 # LaTeX to DOCX Converter
 
-Convert LaTeX documents (especially with Japanese text, jlreq class, and custom commands) to Microsoft Word (.docx) format.
+A modern Python tool that converts LaTeX documents to Microsoft Word (.docx) format with integrated TikZ support.
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://img.shields.io/badge/tests-26%20passing-brightgreen.svg)](tests/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
 
-- ✨ **Custom LaTeX Commands Support** - Automatically converts custom commands like physics2's `\ab()` notation
-- 📊 **Automatic TikZ-to-PNG Conversion** - High-resolution PNG conversion of TikZ figures embedded in docx
-- 🇯🇵 **Japanese Document Support** - Full support for jlreq class, LuaLaTeX, and Unicode text
-- 🔄 **Automatic Label Detection** - Automatically extracts TikZ labels from `\label{fig:...}` commands
-- 📁 **Generalized Design** - Command-line arguments support for processing any LaTeX file
+- ✨ **Modern Python Package** - Clean, maintainable codebase with type hints and pathlib
+- 🧪 **TDD Test Suite** - 26 unit tests following t-wada methodology (100% passing)
+- 📊 **TikZ Integration** - Automatic extraction, compilation, and PNG conversion
+- 🔄 **Auto Label Detection** - Extracts figure labels from `\label{fig:...}` automatically
+- 🇯🇵 **Japanese Support** - Full support for jlreq, LuaLaTeX, and Unicode text
+- 🛠️ **Custom Commands** - Automatically converts physics2 `\ab()` notation and custom macros
+- 🎯 **Single Entry Point** - One command for the entire conversion pipeline
 
 ## Installation
 
-### Requirements
+### System Requirements
 
-- Python 3.7+
-- Bash (4.0+ recommended)
-- LaTeX (LuaLaTeX recommended)
-- Pandoc 2.0+
-- ImageMagick (for PNG conversion)
+- **Python**: 3.10 or higher
+- **LaTeX**: TeX Live or similar (provides `pdflatex`)
+- **ImageMagick**: For PDF to PNG conversion
+- **Pandoc**: For LaTeX to DOCX conversion
 
-### Setup
+#### Ubuntu/Debian
+
+```bash
+sudo apt-get update
+sudo apt-get install texlive-latex-base texlive-latex-extra imagemagick pandoc python3
+```
+
+#### macOS (Homebrew)
+
+```bash
+brew install --cask mactex
+brew install imagemagick pandoc python
+```
+
+### Package Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/latex2docx-converter.git
 cd latex2docx-converter
 
-# Make scripts executable
-chmod +x src/*.sh
+# Create virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install development dependencies (optional)
+pip install -r requirements-dev.txt
 ```
 
 ## Quick Start
@@ -36,31 +59,26 @@ chmod +x src/*.sh
 ### Basic Usage
 
 ```bash
-# Navigate to your LaTeX project directory
-cd your-project-dir
+# Add src to PYTHONPATH and run
+cd /path/to/your-latex-project
+PYTHONPATH=/path/to/latex2docx-converter/src python3 -m latex2docx main.tex
 
-# Convert main.tex to output.docx
-/path/to/converter/src/convert_latex_to_docx.sh main.tex output.docx
 ```
 
-### Command-line Arguments
+### Command-Line Options
 
 ```bash
-# Pattern 1: Specify input file only
-./src/convert_latex_to_docx.sh input.tex
+# Show help
+PYTHONPATH=src python3 -m latex2docx --help
 
-# Pattern 2: Specify both input and output files
-./src/convert_latex_to_docx.sh input.tex output.docx
+# Convert with automatic cleanup
+PYTHONPATH=src python3 -m latex2docx main.tex output.docx --clean
 
-# Pattern 3: Use defaults (main.tex → output_YYYYMMDD.docx)
-./src/convert_latex_to_docx.sh
-```
+# Cleanup only (remove intermediate files)
+PYTHONPATH=src python3 -m latex2docx --clean-only
 
-### Cleanup Generated Files
-
-```bash
-# Remove all intermediate files
-./src/clean.sh
+# Verbose output
+PYTHONPATH=src python3 -m latex2docx main.tex -v
 ```
 
 ## Project Structure
@@ -69,14 +87,21 @@ cd your-project-dir
 latex2docx-converter/
 ├── README.md                        # This file
 ├── LICENSE                          # MIT License
+├── setup.py                         # Package setup
+├── requirements.txt                 # System dependencies documentation
+├── requirements-dev.txt             # Development dependencies
+├── pytest.ini                       # Test configuration
 ├── .gitignore                       # Git settings
 ├── src/
-│   ├── convert_latex_to_docx.sh    # Main conversion script
-│   ├── preprocess.py                # LaTeX preprocessing (custom commands)
-│   ├── extract_tikz_improved.py     # TikZ figure extraction
-│   ├── compile_tikz_labeled.sh      # TikZ → PNG conversion
-│   ├── replace_tikz_labeled.py      # TikZ → \includegraphics replacement
-│   └── clean.sh                     # Cleanup script
+│   └── latex2docx/                  # Main Python package
+│       ├── __init__.py              # Package entry point
+│       ├── __main__.py              # python -m support
+│       ├── cli.py                   # Command-line interface
+│       └── converter.py             # Core conversion logic
+├── tests/                           # TDD test suite
+│   ├── conftest.py                  # Test fixtures
+│   ├── test_cli.py                  # CLI tests (6 tests)
+│   └── test_converter.py            # Converter tests (20 tests)
 ├── examples/
 │   ├── basic/                       # Japanese example
 │   │   ├── main.tex
@@ -88,92 +113,95 @@ latex2docx-converter/
 │       ├── data/
 │       │   └── sample.dat
 │       └── figures/
-├── docs/
-│   └── USAGE.md                     # Detailed usage guide
-└── config.yaml.example              # Configuration template
+└── .github/
+    ├── instructions/                # Development guidelines
+    │   ├── git-workflow.instructions.md
+    │   └── tikz.instructions.md
+    └── SYSTEM_REQUIREMENTS.md      # Detailed system dependencies
 ```
 
-## Script Overview
+## How It Works
 
-### 1. preprocess.py
+### Conversion Pipeline
 
-Preprocesses LaTeX files for pandoc conversion.
-
-**Features:**
-- Converts `\ab(...)` → `\left(...\right)` (physics2 support)
-- Converts `\ab|...|` → `\left|...\right|`
-- Converts `\ab{...}` → `\left{...\right}`
-- Handles nested brackets
-
-**Usage:**
-```bash
-python3 src/preprocess.py input.tex output.tex
+```
+1. Preprocessing          → Convert custom commands (\ab notation)
+2. TikZ Extraction        → Extract TikZ figures as standalone files
+3. TikZ Compilation       → Compile to PDF, convert to PNG (300 DPI)
+4. TikZ Replacement       → Replace \begin{tikzpicture} with \includegraphics
+5. Pandoc Conversion      → Convert LaTeX to DOCX
+6. Cleanup (optional)     → Remove intermediate files
 ```
 
-### 2. extract_tikz_improved.py
+### Module Overview
 
-Extracts TikZ figures from LaTeX files.
+#### `converter.py` - Core Logic
 
-**Features:**
-- Automatic TikZ figure extraction
+The `TexConverter` class handles the entire conversion pipeline:
+
+```python
+from latex2docx.converter import TexConverter
+
+converter = TexConverter('main.tex', 'output.docx')
+converter.preprocess_tex()      # Step 1
+converter.extract_tikz()         # Step 2
+converter.compile_tikz()         # Step 3
+converter.replace_tikz()         # Step 4
+converter.convert_to_docx()      # Step 5
+converter.cleanup()              # Step 6 (optional)
+```
+
+**Key Features:**
+- Uses `pathlib.Path` for cross-platform compatibility
+- Type hints for better code clarity
+- Logging module for proper output
+- Handles nested bracket replacement (physics2 `\ab` notation)
 - Automatic label detection from `\label{fig:...}`
-- Auto-copies data directory for pgfplots support
 
-**Usage:**
+#### `cli.py` - Command-Line Interface
+
+Provides user-friendly CLI with argparse:
+
 ```bash
-python3 src/extract_tikz_improved.py input.tex
+latex2docx input.tex [output.docx] [--clean] [--verbose]
+latex2docx --clean-only  # Cleanup mode
 ```
 
-**Output:**
-- `tikz_extracted/` directory with standalone TeX files
-- `tikz_extracted/data/` with copy of data directory
+## Development
 
-### 3. compile_tikz_labeled.sh
+### Running Tests
 
-Converts TikZ figures to high-resolution PNG images.
-
-**Features:**
-- Compiles each TikZ figure to PDF
-- Converts PDF to PNG at 300 dpi
-- Supports pgfplots graphs
-
-**Output:**
-- `tikz_png/` directory with PNG files
-
-### 4. replace_tikz_labeled.py
-
-Replaces TikZ environments with `\includegraphics` commands.
-
-**Usage:**
 ```bash
-python3 src/replace_tikz_labeled.py input.tex output.tex
+# Activate virtual environment
+source .venv/bin/activate
+
+# Run all tests
+PYTHONPATH=src pytest tests/ -v
+
+# Run specific test class
+PYTHONPATH=src pytest tests/test_converter.py::TestBracketReplacement -v
+
+# Run with coverage (requires pytest-cov)
+PYTHONPATH=src pytest tests/ --cov=latex2docx --cov-report=html
 ```
 
-**Example:**
-```latex
-% Input
-\begin{tikzpicture}
-  \draw (0,0) rectangle (2,1);
-\end{tikzpicture}
+### Test-Driven Development
 
-% Output
-\begin{center}
-\includegraphics[width=0.8\textwidth]{tikz_png/diagram.png}
-\end{center}
-```
+This project follows t-wada TDD methodology:
 
-### 5. convert_latex_to_docx.sh
+1. **Red**: Write tests first
+2. **Green**: Make tests pass
+3. **Refactor**: Clean up code
 
-Main conversion script that orchestrates the entire process.
+**Current Test Coverage:**
+- ✅ 26 unit tests (100% passing)
+- ✅ Bracket replacement tests
+- ✅ Label extraction tests  
+- ✅ TikZ extraction tests
+- ✅ CLI interface tests
+- ✅ Cleanup functionality tests
 
-**Processing Steps:**
-1. Preprocess LaTeX file
-2. Extract TikZ figures
-3. Convert TikZ to PNG
-4. Replace TikZ with image references
-5. Convert to docx with pandoc
-
-## Example Output
+## Example Workflow
 
 After running the converter:
 
@@ -189,151 +217,129 @@ your-project/
 ├── tikz_png/                       # Generated PNG images
 │   ├── shapes.png
 │   └── plot.png
-├── compile.log                     # TikZ compilation log
-└── pandoc_conversion.log           # Pandoc conversion log
+├── compile.log                     # TikZ compilation log (if not cleaned)
+└── pandoc_conversion.log           # Pandoc log (if not cleaned)
 ```
 
-## Supported Custom Commands
+With `--clean` option, intermediate files are automatically removed after conversion.
 
-The converter supports custom LaTeX commands from various packages:
+## Examples
 
-| Package | Command | Conversion |
-|---------|---------|-----------|
-| physics2 | `\ab(x)` | `\left(x\right)` |
-| physics2 | `\ab\|x\|` | `\left\|x\right\|` |
-| physics2 | `\ab{x}` | `\left\{x\right\}` |
+This repository includes two example projects:
 
-Additional commands can be added by extending `preprocess.py`.
+### Basic Example (Japanese)
 
-## Supported TikZ Libraries
+```bash
+cd examples/basic
+PYTHONPATH=../../src python3 -m latex2docx main.tex output.docx --clean
+```
 
-- Core tikz package
-- pgfplots (data visualization)
-- positioning, calc, patterns
-- arrows.meta, decorations.pathmorphing
-- amsmath, amssymb, siunitx
+### English Example
+
+```bash
+cd examples/english  
+PYTHONPATH=../../src python3 -m latex2docx main.tex output.docx --clean
+```
+
+Both examples demonstrate:
+- TikZ figure handling
+- pgfplots integration
+- Data directory auto-copying
+- Custom command conversion
 
 ## Troubleshooting
 
 ### TikZ Compilation Fails
 
 ```bash
-# Check the log
-cat compile.log
+# Check if pdflatex is installed
+pdflatex --version
 
-# Common causes:
-# - Missing LaTeX packages: tlmgr install <package>
-# - External file reference errors: check data/ directory
+# Verify TikZ packages
+kpsewhich tikz.sty pgfplots.sty
+
+# Inspect compilation log (if --clean not used)
+cat compile.log
 ```
 
 ### Pandoc Conversion Fails
 
 ```bash
-# Check the log
+# Verify pandoc installation
+pandoc --version
+
+# Check conversion log
 cat pandoc_conversion.log
 
-# Common causes:
-# - Image path issues: verify tikz_png/ directory exists
-# - Encoding issues: ensure UTF-8 encoding
+# Test pandoc manually
+pandoc test.tex -o test.docx
 ```
 
-### Images Not Displaying in DOCX
+### Images Not in DOCX
+
+- Verify PNG files exist: `ls -la tikz_png/`
+- Check image paths in `*_with_images.tex`
+- Ensure ImageMagick is installed: `convert --version`
+
+## Development Guidelines
+
+### Code Style
+
+- **Python**: Follow PEP 8, use type hints (Python 3.10+)
+- **Testing**: Write tests first (TDD methodology)
+- **Commits**: Follow [Git Workflow Instructions](.github/instructions/git-workflow.instructions.md)
+- **TikZ**: Follow [TikZ Design Principles](.github/instructions/tikz.instructions.md)
+
+### Running Tests
 
 ```bash
-# Verify PNG files were generated
-ls -la tikz_png/
+# Setup virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pytest
 
-# Check file integrity
-file tikz_png/*.png
+# Run all tests
+PYTHONPATH=src pytest tests/ -v
+
+# Run specific test file
+PYTHONPATH=src pytest tests/test_converter.py -v
+
+# Run with coverage
+pip install pytest-cov
+PYTHONPATH=src pytest tests/ --cov=latex2docx --cov-report=term-missing
 ```
 
-## Customization
+### Adding New Features
 
-### Add Custom Commands
-
-Edit `src/preprocess.py` to add new command conversions:
-
-```python
-def replace_custom_beamer(content):
-    """Replace beamer commands"""
-    content = re.sub(r'\\alert\{(.+?)\}', r'\\textcolor{red}{\1}', content)
-    return content
-
-# Call in process_tex_file()
-content = replace_custom_beamer(content)
-```
-
-### Customize TikZ Preamble
-
-Edit `src/extract_tikz_improved.py` to change the standalone document preamble:
-
-```python
-standalone_content = f"""\\documentclass{{standalone}}
-\\usepackage{{your-custom-package}}
-...
-"""
-```
-
-### Modify Pandoc Options
-
-Edit `src/convert_latex_to_docx.sh` to change pandoc options:
-
-```bash
-pandoc "$IMAGES_FILE" -o "${OUTPUT_FILE}" \
-    --resource-path=.:tikz_png:data:figures \
-    --number-sections \
-    --toc \
-    --standalone \
-    --citeproc \
-    --bibliography=refs.bib
-```
-
-## Examples
-
-This repository includes two examples:
-
-- **examples/basic/** - Japanese LaTeX document demonstrating Unicode support
-- **examples/english/** - English LaTeX document
-
-Run either example:
-
-```bash
-cd examples/basic
-../../src/convert_latex_to_docx.sh main.tex output.docx
-
-cd ../english
-../../src/convert_latex_to_docx.sh main.tex output.docx
-```
-
-## Future Enhancements
-
-Planned features (see `config.yaml.example`):
-
-- YAML configuration file support
-- Configurable LaTeX engine (pdflatex, lualatex, xelatex)
-- Batch conversion mode
-- Custom stylesheet support for docx output
+1. Create feature branch: `git checkout -b feature/new-feature`
+2. Write tests first (TDD Red phase)
+3. Implement feature (TDD Green phase)
+4. Refactor code (TDD Refactor phase)
+5. Merge with `--no-ff`: `git merge --no-ff feature/new-feature`
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Ensure all tests pass
+5. Submit a Pull Request
 
 ## References
 
-- [Pandoc Documentation](https://pandoc.org/MANUAL.html)
-- [TikZ & PGFPlots](https://tikz.dev/)
-- [jlreq Class](https://github.com/abenori/jlreq)
-- [physics2 Package](https://ctan.org/pkg/physics2)
-
-## Support
-
-For bug reports, feature requests, and questions, please open an [Issue](https://github.com/yourusername/latex2docx-converter/issues).
+- [Pandoc User's Guide](https://pandoc.org/MANUAL.html)
+- [TikZ & PGF Manual](https://tikz.dev/)
+- [pytest Documentation](https://docs.pytest.org/)
+- [Python Type Hints](https://docs.python.org/3/library/typing.html)
 
 ---
+
+**Developed with ❤️ using TDD methodology**
 
 **Latest Version:** v0.1.0  
 **Last Updated:** 2026-01-15
