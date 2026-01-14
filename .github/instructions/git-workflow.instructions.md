@@ -95,18 +95,18 @@ script_COMPLETE.py  # 混乱の元
 ### 解決策: Gitブランチで管理
 ```bash
 # ✅ 推奨
-git checkout -b experiment/approach-v1
+git switch -c experiment/approach-v1
 # 試行錯誤
 git add script.py
 git commit -m "Try regex-based replacement"
 
-git checkout -b experiment/approach-v2
+git switch -c experiment/approach-v2
 # 別のアプローチ
 git add script.py
 git commit -m "Try pattern-based replacement"
 
 # 成功したアプローチをmainにマージ
-git checkout main
+git switch main
 git merge --no-ff experiment/approach-v2
 ```
 
@@ -114,7 +114,7 @@ git merge --no-ff experiment/approach-v2
 ```bash
 git tag working-v1.0 -m "First working version"
 # 後で参照可能
-git checkout working-v1.0
+git switch --detach working-v1.0
 ```
 
 ---
@@ -167,7 +167,7 @@ Closes #15
 
 ### 1. 実験ブランチで試行
 ```bash
-git checkout -b experiment/auto-label-detection
+git switch -c experiment/auto-label-detection
 # スクリプト修正・テスト
 git commit -m "Try extracting labels from TeX file"
 # 失敗
@@ -180,11 +180,11 @@ git commit -m "Use different approach with re.finditer"
 ### 2. 整理してmainにマージ
 ```bash
 # オプション1: そのままマージ（履歴を保持）
-git checkout main
+git switch main
 git merge --no-ff experiment/auto-label-detection
 
 # オプション2: squashしてまとめる
-git checkout main
+git switch main
 git merge --squash experiment/auto-label-detection
 git commit -m "Add automatic TikZ label detection
 
@@ -273,11 +273,11 @@ git switch -c feature/recovered <commit-id>
 ## まとめ
 
 ### 試行錯誤の黄金パターン
-1. **実験開始**: `git checkout -b experiment/テーマ名`
+1. **実験開始**: `git switch -c experiment/テーマ名`
 2. **試行錯誤**: コミットを重ねる（失敗も含めて）
 3. **成功確認**: 動作確認・テスト
 4. **整理**: 必要に応じて`--squash`でまとめる
-5. **マージ**: `git merge --no-ff experiment/テーマ名`
+5. **マージ**: `git switch main` → `git merge --no-ff experiment/テーマ名`
 6. **後片付け**: `git branch -d experiment/テーマ名`
 
 ### 楽観的な命名を避ける
