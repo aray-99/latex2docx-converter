@@ -2,6 +2,10 @@
 
 このプロジェクトは、LaTeX文書（TikZ含む）を DOCX に変換するための Python CLI ツールです。
 
+Wordを使わざるを得なくなったLaTeXファンに、深い同情を。 それでもLaTeXを捨てない仲間には、もっと深い敬意を。
+
+このリポジトリは GitHub Copilot の支援を受けて開発されています。
+
 ## クイックスタート
 
 1) システム依存（LaTeX / ImageMagick / Pandoc）を入れる

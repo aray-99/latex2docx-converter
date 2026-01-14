@@ -2,6 +2,8 @@
 
 A modern Python tool that converts LaTeX documents to Microsoft Word (.docx) format with integrated TikZ support.
 
+If you got dragged into Word against your will: we feel you. If you still choose LaTeX anyway: welcome, friend.
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![tests](https://github.com/aray-99/latex2docx-converter/actions/workflows/tests.yml/badge.svg)](https://github.com/aray-99/latex2docx-converter/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -348,6 +350,8 @@ Contributions welcome! Please:
 ---
 
 **Developed with ❤️ using TDD methodology**
+
+This repository was developed with assistance from GitHub Copilot.
 
 **Latest Version:** v0.2.0  
 **Last Updated:** 2026-01-15
