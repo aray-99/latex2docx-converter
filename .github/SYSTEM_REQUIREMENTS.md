@@ -64,9 +64,9 @@ sudo pacman -S pandoc
 
 ## Python Requirements
 
-**Python Version**: 3.8 or higher
+**Python Version**: 3.10 or higher
 
-**Python Packages**: None (uses only standard library)
+**Python Packages**: None at runtime (uses only standard library)
 
 The converter script uses only Python standard library modules:
 - `re`, `os`, `sys`, `pathlib`

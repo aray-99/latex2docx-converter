@@ -3,7 +3,7 @@
 A modern Python tool that converts LaTeX documents to Microsoft Word (.docx) format with integrated TikZ support.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-26%20passing-brightgreen.svg)](tests/)
+[![tests](https://github.com/aray-99/latex2docx-converter/actions/workflows/tests.yml/badge.svg)](https://github.com/aray-99/latex2docx-converter/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
@@ -43,14 +43,17 @@ brew install imagemagick pandoc python
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/latex2docx-converter.git
+git clone https://github.com/aray-99/latex2docx-converter.git
 cd latex2docx-converter
 
 # Create virtual environment (recommended)
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install development dependencies (optional)
+# Install (editable install for development)
+pip install -e .
+
+# Optional: development tools
 pip install -r requirements-dev.txt
 ```
 
@@ -59,9 +62,14 @@ pip install -r requirements-dev.txt
 ### Basic Usage
 
 ```bash
-# Add src to PYTHONPATH and run
+# Run from your LaTeX project directory
 cd /path/to/your-latex-project
-PYTHONPATH=/path/to/latex2docx-converter/src python3 -m latex2docx main.tex
+
+# Convert main.tex → output_YYYYMMDD.docx
+latex2docx main.tex
+
+# Specify output filename
+latex2docx main.tex output.docx
 
 ```
 
@@ -69,16 +77,16 @@ PYTHONPATH=/path/to/latex2docx-converter/src python3 -m latex2docx main.tex
 
 ```bash
 # Show help
-PYTHONPATH=src python3 -m latex2docx --help
+latex2docx --help
 
 # Convert with automatic cleanup
-PYTHONPATH=src python3 -m latex2docx main.tex output.docx --clean
+latex2docx main.tex output.docx --clean
 
 # Cleanup only (remove intermediate files)
-PYTHONPATH=src python3 -m latex2docx --clean-only
+latex2docx --clean-only
 
 # Verbose output
-PYTHONPATH=src python3 -m latex2docx main.tex -v
+latex2docx main.tex -v
 ```
 
 ## Project Structure
@@ -88,7 +96,7 @@ latex2docx-converter/
 ├── README.md                        # This file
 ├── LICENSE                          # MIT License
 ├── setup.py                         # Package setup
-├── requirements.txt                 # System dependencies documentation
+├── requirements.txt                 # Python runtime deps (none)
 ├── requirements-dev.txt             # Development dependencies
 ├── pytest.ini                       # Test configuration
 ├── .gitignore                       # Git settings
@@ -176,13 +184,13 @@ latex2docx --clean-only  # Cleanup mode
 source .venv/bin/activate
 
 # Run all tests
-PYTHONPATH=src pytest tests/ -v
+pytest tests/ -v
 
 # Run specific test class
-PYTHONPATH=src pytest tests/test_converter.py::TestBracketReplacement -v
+pytest tests/test_converter.py::TestBracketReplacement -v
 
 # Run with coverage (requires pytest-cov)
-PYTHONPATH=src pytest tests/ --cov=latex2docx --cov-report=html
+pytest tests/ --cov=latex2docx --cov-report=html
 ```
 
 ### Test-Driven Development
@@ -231,14 +239,14 @@ This repository includes two example projects:
 
 ```bash
 cd examples/basic
-PYTHONPATH=../../src python3 -m latex2docx main.tex output.docx --clean
+latex2docx main.tex output.docx --clean
 ```
 
 ### English Example
 
 ```bash
 cd examples/english  
-PYTHONPATH=../../src python3 -m latex2docx main.tex output.docx --clean
+latex2docx main.tex output.docx --clean
 ```
 
 Both examples demonstrate:
@@ -341,5 +349,5 @@ Contributions welcome! Please:
 
 **Developed with ❤️ using TDD methodology**
 
-**Latest Version:** v0.1.0  
+**Latest Version:** v0.2.0  
 **Last Updated:** 2026-01-15

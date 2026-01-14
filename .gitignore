@@ -60,6 +60,5 @@ pandoc_conversion.log
 .DS_Store
 Thumbs.db
 
-# カスタムスクリプト実験用
-experiment/
-test_*
+# ローカル実験用（リポジトリ直下のみ）
+/experiment/
