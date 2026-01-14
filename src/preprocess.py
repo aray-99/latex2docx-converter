@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""
-TeXファイルをpandoc変換用に前処理するスクリプト (v3)
-アプローチ: \ab(...)のパターンを正規表現で直接置換
+r"""
+TeXファイルをpandoc変換用に前処理するスクリプト (v4)
+アプローチ: \\ab(...)のパターンを正規表現で直接置換
 """
 
 import re
+import sys
 
 def replace_ab_brackets(content):
     """
@@ -98,4 +99,15 @@ def process_tex_file(input_file, output_file):
     print("\n=== 前処理完了 ===")
 
 if __name__ == "__main__":
-    process_tex_file("main.tex", "main_pandoc.tex")
+    # コマンドライン引数でファイル指定
+    if len(sys.argv) >= 3:
+        input_file = sys.argv[1]
+        output_file = sys.argv[2]
+    elif len(sys.argv) == 2:
+        input_file = sys.argv[1]
+        output_file = sys.argv[1].replace('.tex', '_pandoc.tex')
+    else:
+        input_file = 'main.tex'
+        output_file = 'main_pandoc.tex'
+    
+    process_tex_file(input_file, output_file)
