@@ -1,44 +1,80 @@
 #!/usr/bin/env python3
 """
-TeXファイルからTikZ図を抽出して、データパスを修正した上でstandaloneファイルとして保存
+TeXファイルからTikZ図を抽出して、standalone ファイルとして保存
+自動ラベル検出対応
 """
 
 import re
 import os
 import shutil
+import sys
 
-# TikZ図とそのラベルのマッピング
-TIKZ_LABELS = [
-    ('cantilever-beam', '片持ち梁の概念図'),
-    ('spring-mass-system', 'バネマス系の概念図'),
-    ('model-overview', '解析モデルの概要'),
-    ('time-bgs', '時間ステップごとのBGS反復回数'),
-    ('time-displacement', '時間ステップごとの変位'),
-    ('bgs-displacement-overlay', 'BGS反復回数と変位の時間変化（2軸表示）'),
-    ('result-1e-4', 'BGS反復回数と変位の時間変化（Δt=1.0e-4）'),
-]
 
-def extract_tikz_figures_with_labels(input_file, output_dir='tikz_extracted'):
-    """TikZ図を抽出してlabelに基づく名前でstandaloneファイルとして保存"""
+def extract_tikz_labels(tex_content):
+    r"""
+    Search for \label{fig:...} in LaTeX file and associate with TikZ figures
+    Returns: dictionary {label_name: description}
+    """
+    # Find \label{fig:...} patterns
+    pattern = r'\\label\{fig:([^}]+)\}'
+    matches = re.finditer(pattern, tex_content)
+    
+    labels = {}
+    for match in matches:
+        label_name = match.group(1)
+        labels[label_name] = label_name  # Default: use label_name as is
+    
+    return labels
+
+
+def extract_tikz_figures_with_labels(input_file, output_dir='tikz_extracted', 
+                                     predefined_labels=None):
+    """
+    Extract TikZ figures from LaTeX and save as standalone files
+    
+    Args:
+        input_file: Input LaTeX file
+        output_dir: Output directory
+        predefined_labels: Predefined label dictionary {label_name: description}
+    """
     
     os.makedirs(output_dir, exist_ok=True)
     
-    # dataディレクトリもコピー（TikZ図のコンパイル用）
-    if os.path.exists('data') and not os.path.exists(os.path.join(output_dir, 'data')):
-        shutil.copytree('data', os.path.join(output_dir, 'data'))
-        print(f"dataディレクトリを {output_dir}/ にコピーしました")
+    # Auto-copy data directory for TikZ compilation
+    data_dir = 'data'
+    if os.path.exists(data_dir) and not os.path.exists(os.path.join(output_dir, 'data')):
+        shutil.copytree(data_dir, os.path.join(output_dir, 'data'))
+        print(f"Copied data directory to {output_dir}/")
     
     with open(input_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # TikZ図を検索
+    # Search for TikZ figures
     tikz_pattern = r'\\begin\{tikzpicture\}.*?\\end\{tikzpicture\}'
     tikz_figures = re.findall(tikz_pattern, content, re.DOTALL)
     
-    print(f"\n=== 検出されたTikZ図: {len(tikz_figures)}個 ===\n")
+    # Auto-detect labels
+    auto_labels = extract_tikz_labels(content)
     
-    # 各TikZ図をstandaloneファイルとして保存
-    for i, (tikz_code, (label_name, description)) in enumerate(zip(tikz_figures, TIKZ_LABELS), 1):
+    # Merge predefined and auto-detected labels
+    if predefined_labels:
+        labels = {**auto_labels, **predefined_labels}
+    else:
+        labels = auto_labels
+    
+    print(f"\n=== Detected TikZ figures: {len(tikz_figures)} ===")
+    print(f"=== Detected labels: {len(labels)} ===\n")
+    
+    # Save each TikZ figure as a standalone file
+    for i, tikz_code in enumerate(tikz_figures, 1):
+        # Get label name (list order)
+        if i <= len(labels):
+            label_name = list(labels.keys())[i - 1]
+            description = labels[label_name]
+        else:
+            label_name = f'tikz-{i:02d}'
+            description = f'TikZ Figure {i}'
+        
         standalone_content = f"""\\documentclass{{standalone}}
 \\usepackage{{tikz}}
 \\usetikzlibrary{{calc,positioning,patterns,arrows.meta,decorations.pathmorphing}}
@@ -60,22 +96,29 @@ def extract_tikz_figures_with_labels(input_file, output_dir='tikz_extracted'):
     
     return len(tikz_figures)
 
-def clean_cache():
-    """既存のキャッシュディレクトリをクリーン"""
-    import shutil
+
+def clean_cache(directories=None):
+    """Clean up cache directories"""
+    if directories is None:
+        directories = ['tikz_extracted', 'tikz_png']
     
-    dirs_to_clean = ['tikz_extracted', 'tikz_png']
-    for dir_name in dirs_to_clean:
+    for dir_name in directories:
         if os.path.exists(dir_name):
-            print(f"クリーニング: {dir_name}/")
+            print(f"Cleaning: {dir_name}/")
             shutil.rmtree(dir_name)
 
+
 if __name__ == '__main__':
-    # キャッシュをクリーン
+    # Parse command-line arguments
+    if len(sys.argv) >= 2:
+        input_file = sys.argv[1]
+    else:
+        input_file = 'main.tex'
+    
+    # Clean cache
     clean_cache()
     print()
     
-    # TikZ図を抽出
-    input_file = 'main.tex'
+    # Extract TikZ figures
     count = extract_tikz_figures_with_labels(input_file)
-    print(f"\n=== 合計 {count} 個のTikZ図を抽出しました ===")
+    print(f"\n=== Extracted {count} TikZ figures ===")

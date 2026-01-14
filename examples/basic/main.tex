@@ -1,0 +1,94 @@
+\documentclass[lualatex]{jlreq}
+\usepackage{physics2}
+\usephysicsmodule{ab}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\title{LaTeX to DOCX Converter サンプル}
+\author{サンプル作成者}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{はじめに}
+
+このドキュメントは、LaTeX to DOCX Converter の使用例を示しています。
+カスタムコマンド、TikZ図、データプロットなど、様々な機能を含みます。
+
+\section{カスタムコマンドの例}
+
+physics2パッケージの \verb|\ab()| コマンドを使用した例：
+
+\[
+\ab(x + y) = \left( x + y \right)
+\]
+
+ネストされた括弧の例：
+
+\[
+\ab(\ab(a) + b) = \text{こういった式も対応します}
+\]
+
+\section{TikZ図の例}
+
+\subsection{シンプルな幾何図形}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.5]
+    % 矩形
+    \draw[thick] (0,0) rectangle (2,1);
+    \node[anchor=center] at (1,0.5) {矩形};
+    
+    % 円
+    \draw[thick, fill=lightgray] (4,0.5) circle (0.5);
+    \node[anchor=center] at (4,0.5) {円};
+    
+    % 三角形
+    \draw[thick] (6,0) -- (7,0) -- (6.5,1) -- cycle;
+    \node[anchor=center] at (6.5,0.3) {三角形};
+\end{tikzpicture}
+\caption{基本的な幾何図形}
+\label{fig:shapes}
+\end{figure}
+
+\subsection{データプロット}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=X軸,
+    ylabel=Y軸,
+    width=8cm,
+    height=6cm,
+    grid=major,
+    legend pos=north west
+]
+    \addplot[mark=*,blue] table {data/sample.dat};
+    \addlegendentry{サンプルデータ}
+\end{axis}
+\end{tikzpicture}
+\caption{データプロット例}
+\label{fig:plot}
+\end{figure}
+
+\section{数式の例}
+
+インライン数式の例：$E = mc^2$ は有名な式です。
+
+ディスプレイ数式の例：
+
+\begin{equation}
+\frac{d}{dt}\ab(p(t)) = F(t)
+\label{eq:newton}
+\end{equation}
+
+\section{結論}
+
+このサンプルで示した機能が正常に DOCX ファイルに変換されることを確認してください。
+
+\end{document}
