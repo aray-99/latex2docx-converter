@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""
-TikZ図をincludegraphicsで置換するスクリプト（自動ラベル検出対応）
+r"""
+Replace TikZ figures with included graphics (auto-label detection support).
 """
 
 import re
