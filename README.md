@@ -18,6 +18,12 @@ If you got dragged into Word against your will: we feel you. If you still choose
 - 🛠️ **Custom Commands** - Automatically converts physics2 `\ab()` notation and custom macros
 - 🎯 **Single Entry Point** - One command for the entire conversion pipeline
 
+## Docs
+
+- Usage: docs/USAGE.md
+- Development: docs/DEVELOPMENT.md
+- Changelog: CHANGELOG.md
+
 ## Installation
 
 ### System Requirements
@@ -321,7 +327,7 @@ PYTHONPATH=src pytest tests/ --cov=latex2docx --cov-report=term-missing
 
 ### Adding New Features
 
-1. Create feature branch: `git checkout -b feature/new-feature`
+1. Create feature branch: `git switch -c feature/new-feature`
 2. Write tests first (TDD Red phase)
 3. Implement feature (TDD Green phase)
 4. Refactor code (TDD Refactor phase)
