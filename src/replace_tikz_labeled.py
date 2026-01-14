@@ -8,7 +8,7 @@ import sys
 
 
 def auto_detect_tikz_labels(tex_file):
-    """Auto-detect \label{fig:...} from LaTeX file"""
+    r"""Auto-detect \label{fig:...} from LaTeX file"""
     with open(tex_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
@@ -18,7 +18,7 @@ def auto_detect_tikz_labels(tex_file):
 
 
 def replace_tikz_with_images(input_file, output_file, png_dir='tikz_png', labels=None):
-    """
+    r"""
     Replace TikZ environments with \includegraphics commands
     
     Args:

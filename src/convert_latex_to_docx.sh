@@ -1,6 +1,9 @@
 #!/bin/bash
 # pandoc変換の全プロセスを自動化するスクリプト
 
+# スクリプトの位置を取得
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # コマンドライン引数でファイル指定
 INPUT_FILE="${1:-main.tex}"
 OUTPUT_FILE="${2:-}"
@@ -25,7 +28,7 @@ echo ""
 
 # Step 1: TeXファイルの前処理
 echo "[1/5] TeXファイルの前処理（括弧置換）"
-python3 preprocess.py "$INPUT_FILE" "$PANDOC_FILE"
+python3 "$SCRIPT_DIR/preprocess.py" "$INPUT_FILE" "$PANDOC_FILE"
 if [ $? -ne 0 ]; then
     echo "エラー: 前処理に失敗しました"
     exit 1
@@ -34,7 +37,7 @@ echo ""
 
 # Step 2: TikZ図の抽出（dataディレクトリもコピー）
 echo "[2/5] TikZ図の抽出（自動ラベル検出）"
-python3 extract_tikz_improved.py "$INPUT_FILE"
+python3 "$SCRIPT_DIR/extract_tikz_improved.py" "$INPUT_FILE"
 if [ $? -ne 0 ]; then
     echo "エラー: TikZ図の抽出に失敗しました"
     exit 1
@@ -43,7 +46,7 @@ echo ""
 
 # Step 3: TikZ図のコンパイル
 echo "[3/5] TikZ図のコンパイル（PDF → PNG）"
-./compile_tikz_labeled.sh > compile.log 2>&1
+bash "$SCRIPT_DIR/compile_tikz_labeled.sh" > compile.log 2>&1
 if [ $? -ne 0 ]; then
     echo "エラー: TikZ図のコンパイルに失敗しました"
     echo "詳細: compile.log を確認してください"
@@ -59,7 +62,7 @@ echo ""
 
 # Step 4: TikZ図を画像参照に置換
 echo "[4/5] TikZ図を画像参照に置換"
-python3 replace_tikz_labeled.py "$PANDOC_FILE" "$IMAGES_FILE"
+python3 "$SCRIPT_DIR/replace_tikz_labeled.py" "$PANDOC_FILE" "$IMAGES_FILE"
 if [ $? -ne 0 ]; then
     echo "エラー: 画像置換に失敗しました"
     exit 1

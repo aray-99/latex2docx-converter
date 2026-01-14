@@ -8,7 +8,7 @@ import re
 import sys
 
 def replace_ab_brackets(content):
-    """
+    r"""
     Replace \ab(...) with \left(...\right)
     Replace \ab|...| with \left|...\right|
     Replace \ab{...} with \left\{...\right\}
