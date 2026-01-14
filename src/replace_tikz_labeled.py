@@ -8,7 +8,7 @@ import sys
 
 
 def auto_detect_tikz_labels(tex_file):
-    """TeXファイルから \label{fig:...} を自動検出"""
+    """Auto-detect \label{fig:...} from LaTeX file"""
     with open(tex_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
@@ -19,23 +19,23 @@ def auto_detect_tikz_labels(tex_file):
 
 def replace_tikz_with_images(input_file, output_file, png_dir='tikz_png', labels=None):
     """
-    TikZ図をPNG画像への参照で置換
+    Replace TikZ environments with \includegraphics commands
     
     Args:
-        input_file: 入力TeX ファイル
-        output_file: 出力TeX ファイル
-        png_dir: PNG画像ディレクトリ
-        labels: ラベル名リスト（Noneの場合は自動検出）
+        input_file: Input LaTeX file
+        output_file: Output LaTeX file
+        png_dir: PNG image directory
+        labels: Label name list (auto-detect if None)
     """
     
     with open(input_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # ラベルを自動検出（提供されない場合）
+    # Auto-detect labels if not provided
     if labels is None:
         labels = auto_detect_tikz_labels(input_file)
     
-    # TikZ図を検索して置換
+    # Search and replace TikZ figures
     tikz_pattern = r'\\begin\{tikzpicture\}.*?\\end\{tikzpicture\}'
     
     counter = 0
@@ -47,7 +47,7 @@ def replace_tikz_with_images(input_file, output_file, png_dir='tikz_png', labels
             label_name = f'tikz-{counter:02d}'
         counter += 1
         png_filename = f'{png_dir}/{label_name}.png'
-        # center環境で画像を挿入
+        # Insert image in center environment
         return f'\\begin{{center}}\n\\includegraphics[width=0.8\\textwidth]{{{png_filename}}}\n\\end{{center}}'
     
     new_content = re.sub(tikz_pattern, replace_func, content, flags=re.DOTALL)
@@ -55,12 +55,12 @@ def replace_tikz_with_images(input_file, output_file, png_dir='tikz_png', labels
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(new_content)
     
-    print(f"=== {counter} 個のTikZ図を画像参照に置換しました ===")
-    print(f"出力ファイル: {output_file}")
+    print(f"=== Replaced {counter} TikZ figures with image references ===")
+    print(f"Output file: {output_file}")
 
 
 if __name__ == '__main__':
-    # コマンドライン引数でファイル指定
+    # Parse command-line arguments
     if len(sys.argv) >= 3:
         input_file = sys.argv[1]
         output_file = sys.argv[2]

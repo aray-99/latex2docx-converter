@@ -1,295 +1,339 @@
 # LaTeX to DOCX Converter
 
-LaTeX 文書（特に日本語・jlreq・カスタムコマンド使用）を Microsoft Word（.docx）形式に変換するツール群です。
+Convert LaTeX documents (especially with Japanese text, jlreq class, and custom commands) to Microsoft Word (.docx) format.
 
-## 特徴
+## Features
 
-- ✨ **カスタムLaTeXコマンド対応** - physics2 の `\ab()` などのカスタムコマンドを自動変換
-- 📊 **TikZ図の自動PNG変換** - TikZ 図を高解像度PNG画像に自動変換して docx に埋め込み
-- 🇯🇵 **日本語文書対応** - jlreq クラス、LuaLaTeX に完全対応
-- 🔄 **自動ラベル検出** - `\label{fig:...}` から TikZ ラベルを自動抽出
-- 📁 **汎用性** - コマンドライン引数対応で任意のTeXファイルを処理可能
+- ✨ **Custom LaTeX Commands Support** - Automatically converts custom commands like physics2's `\ab()` notation
+- 📊 **Automatic TikZ-to-PNG Conversion** - High-resolution PNG conversion of TikZ figures embedded in docx
+- 🇯🇵 **Japanese Document Support** - Full support for jlreq class, LuaLaTeX, and Unicode text
+- 🔄 **Automatic Label Detection** - Automatically extracts TikZ labels from `\label{fig:...}` commands
+- 📁 **Generalized Design** - Command-line arguments support for processing any LaTeX file
 
-## インストール
+## Installation
 
-### 必要な環境
+### Requirements
 
-- Python 3.7以上
-- Bash (bash 4.0以上推奨)
-- LaTeX (LuaLaTeX 推奨)
-- Pandoc 2.0以上
-- ImageMagick (PNG変換用)
+- Python 3.7+
+- Bash (4.0+ recommended)
+- LaTeX (LuaLaTeX recommended)
+- Pandoc 2.0+
+- ImageMagick (for PNG conversion)
 
-### セットアップ
+### Setup
 
 ```bash
-# リポジトリをクローン
+# Clone the repository
 git clone https://github.com/yourusername/latex2docx-converter.git
 cd latex2docx-converter
 
-# スクリプトに実行権限を付与
+# Make scripts executable
 chmod +x src/*.sh
 ```
 
-## 使用方法
+## Quick Start
 
-### 基本的な使用例
+### Basic Usage
 
 ```bash
-# examples/basic ディレクトリで実行
-cd examples/basic
-../../src/convert_latex_to_docx.sh main.tex output.docx
+# Navigate to your LaTeX project directory
+cd your-project-dir
+
+# Convert main.tex to output.docx
+/path/to/converter/src/convert_latex_to_docx.sh main.tex output.docx
 ```
 
-### コマンドライン引数
+### Command-line Arguments
 
 ```bash
-# パターン1: 入力ファイルを指定
+# Pattern 1: Specify input file only
 ./src/convert_latex_to_docx.sh input.tex
 
-# パターン2: 入力ファイルと出力ファイルを指定
+# Pattern 2: Specify both input and output files
 ./src/convert_latex_to_docx.sh input.tex output.docx
 
-# パターン3: デフォルト（main.tex を読み込み、output_YYYYMMDD.docx を生成）
+# Pattern 3: Use defaults (main.tex → output_YYYYMMDD.docx)
 ./src/convert_latex_to_docx.sh
 ```
 
-### 生成ファイルのクリーンアップ
+### Cleanup Generated Files
 
 ```bash
-# 中間ファイルをすべて削除
+# Remove all intermediate files
 ./src/clean.sh
 ```
 
-## ファイル構成
+## Project Structure
 
 ```
 latex2docx-converter/
-├── README.md                        # このファイル
-├── LICENSE                          # MITライセンス
-├── .gitignore                       # Git設定
+├── README.md                        # This file
+├── LICENSE                          # MIT License
+├── .gitignore                       # Git settings
 ├── src/
-│   ├── convert_latex_to_docx.sh    # メイン変換スクリプト
-│   ├── preprocess.py                # LaTeX前処理（カスタムコマンド変換）
-│   ├── extract_tikz_improved.py     # TikZ図抽出（自動ラベル検出）
-│   ├── compile_tikz_labeled.sh      # TikZ → PNG 変換
-│   ├── replace_tikz_labeled.py      # TikZ → \includegraphics 置換
-│   └── clean.sh                     # クリーンアップスクリプト
+│   ├── convert_latex_to_docx.sh    # Main conversion script
+│   ├── preprocess.py                # LaTeX preprocessing (custom commands)
+│   ├── extract_tikz_improved.py     # TikZ figure extraction
+│   ├── compile_tikz_labeled.sh      # TikZ → PNG conversion
+│   ├── replace_tikz_labeled.py      # TikZ → \includegraphics replacement
+│   └── clean.sh                     # Cleanup script
 ├── examples/
-│   └── basic/                       # シンプルな使用例
+│   ├── basic/                       # Japanese example
+│   │   ├── main.tex
+│   │   ├── data/
+│   │   │   └── sample.dat
+│   │   └── figures/
+│   └── english/                     # English example
 │       ├── main.tex
 │       ├── data/
 │       │   └── sample.dat
 │       └── figures/
-└── docs/
-    └── USAGE.md                     # 詳細な使用方法
+├── docs/
+│   └── USAGE.md                     # Detailed usage guide
+└── config.yaml.example              # Configuration template
 ```
 
-## スクリプト説明
+## Script Overview
 
 ### 1. preprocess.py
-LaTeX ファイルをpandoc変換用に前処理します。
 
-**機能:**
-- `\ab(...)` → `\left(...\right)` に変換（physics2対応）
-- `\ab|...|` → `\left|...\right|` に変換
-- `\ab{...}` → `\left{...\right}` に変換
-- ネストされた括弧に対応
+Preprocesses LaTeX files for pandoc conversion.
 
-**使用例:**
+**Features:**
+- Converts `\ab(...)` → `\left(...\right)` (physics2 support)
+- Converts `\ab|...|` → `\left|...\right|`
+- Converts `\ab{...}` → `\left{...\right}`
+- Handles nested brackets
+
+**Usage:**
 ```bash
-python3 src/preprocess.py input.tex output_pandoc.tex
-```
-
-**コマンドライン引数:**
-```
-python3 preprocess.py [input_file] [output_file]
+python3 src/preprocess.py input.tex output.tex
 ```
 
 ### 2. extract_tikz_improved.py
-TikZ 図を抽出して standalone ファイルとして保存します。
 
-**機能:**
-- TeXファイルから TikZ 図を自動抽出
-- `\label{fig:...}` から自動的にラベル検出
-- データディレクトリ（data/）を自動コピー
+Extracts TikZ figures from LaTeX files.
 
-**使用例:**
+**Features:**
+- Automatic TikZ figure extraction
+- Automatic label detection from `\label{fig:...}`
+- Auto-copies data directory for pgfplots support
+
+**Usage:**
 ```bash
 python3 src/extract_tikz_improved.py input.tex
 ```
 
-**出力:**
-- `tikz_extracted/` ディレクトリに standalone TeX ファイル
-- `tikz_extracted/data/` に data ディレクトリのコピー
+**Output:**
+- `tikz_extracted/` directory with standalone TeX files
+- `tikz_extracted/data/` with copy of data directory
 
 ### 3. compile_tikz_labeled.sh
-TikZ 図を PDF 経由で高解像度 PNG に変換します。
 
-**機能:**
-- 各 TikZ 図を個別にコンパイル（PDF化）
-- PDF を 300dpi の PNG に変換
-- pgfplots グラフも対応
+Converts TikZ figures to high-resolution PNG images.
 
-**出力:**
-- `tikz_png/` ディレクトリに PNG ファイル
+**Features:**
+- Compiles each TikZ figure to PDF
+- Converts PDF to PNG at 300 dpi
+- Supports pgfplots graphs
+
+**Output:**
+- `tikz_png/` directory with PNG files
 
 ### 4. replace_tikz_labeled.py
-TikZ 環境を `\includegraphics` コマンドに置換します。
 
-**機能:**
-- 自動的にラベルを検出
-- TikZ → `\includegraphics` に置換
-- 画像の幅を自動調整
+Replaces TikZ environments with `\includegraphics` commands.
 
-**使用例:**
+**Usage:**
 ```bash
-python3 src/replace_tikz_labeled.py input_pandoc.tex output_with_images.tex
+python3 src/replace_tikz_labeled.py input.tex output.tex
+```
+
+**Example:**
+```latex
+% Input
+\begin{tikzpicture}
+  \draw (0,0) rectangle (2,1);
+\end{tikzpicture}
+
+% Output
+\begin{center}
+\includegraphics[width=0.8\textwidth]{tikz_png/diagram.png}
+\end{center}
 ```
 
 ### 5. convert_latex_to_docx.sh
-上記すべてを統合したメインスクリプトです。
 
-**処理フロー:**
-1. LaTeX前処理
-2. TikZ図抽出
-3. TikZ → PNG 変換
-4. TikZ → 画像参照に置換
-5. pandoc で docx に変換
+Main conversion script that orchestrates the entire process.
 
-## サンプル実行
+**Processing Steps:**
+1. Preprocess LaTeX file
+2. Extract TikZ figures
+3. Convert TikZ to PNG
+4. Replace TikZ with image references
+5. Convert to docx with pandoc
 
-```bash
-# サンプルディレクトリに移動
-cd examples/basic
+## Example Output
 
-# 実行（main.tex を output_YYYYMMDD.docx に変換）
-../../src/convert_latex_to_docx.sh
-
-# または、出力ファイル名を指定
-../../src/convert_latex_to_docx.sh main.tex output.docx
-```
-
-### 出力ファイル
-
-変換完了後、以下のファイルが生成されます：
+After running the converter:
 
 ```
-examples/basic/
-├── main_pandoc.tex                 # LaTeX前処理済みファイル
-├── main_with_images.tex            # 画像参照置換済みファイル
-├── output_YYYYMMDD.docx            # 最終出力ファイル（Word形式）
-├── tikz_extracted/                 # 抽出されたTikZ figuresディレクトリ
+your-project/
+├── main_pandoc.tex                 # Preprocessed file
+├── main_with_images.tex            # Image-replaced file
+├── output.docx                     # Final output (Word format)
+├── tikz_extracted/                 # Extracted TikZ figures
 │   ├── shapes.tex
 │   ├── plot.tex
 │   └── data/
-├── tikz_png/                        # 生成されたPNG画像
+├── tikz_png/                       # Generated PNG images
 │   ├── shapes.png
 │   └── plot.png
-├── compile.log                      # TikZコンパイルログ
-└── pandoc_conversion.log            # pandocコンバージョンログ
+├── compile.log                     # TikZ compilation log
+└── pandoc_conversion.log           # Pandoc conversion log
 ```
 
-## サポート対応
+## Supported Custom Commands
 
-### サポートされるカスタムコマンド
+The converter supports custom LaTeX commands from various packages:
 
-- `physics2` パッケージの `\ab()`, `\ab||`, `\ab{}` など
-- その他のカスタムコマンドは適宜追加可能
+| Package | Command | Conversion |
+|---------|---------|-----------|
+| physics2 | `\ab(x)` | `\left(x\right)` |
+| physics2 | `\ab\|x\|` | `\left\|x\right\|` |
+| physics2 | `\ab{x}` | `\left\{x\right\}` |
 
-### サポートされる TikZ ライブラリ
+Additional commands can be added by extending `preprocess.py`.
 
-- `tikz` 基本機能
-- `pgfplots` （データプロット）
-- `positioning`, `calc`, `patterns`, `arrows.meta`, `decorations.pathmorphing`
-- `amsmath`, `amssymb`, `siunitx`
+## Supported TikZ Libraries
 
-## トラブルシューティング
+- Core tikz package
+- pgfplots (data visualization)
+- positioning, calc, patterns
+- arrows.meta, decorations.pathmorphing
+- amsmath, amssymb, siunitx
 
-### TikZ コンパイル失敗
+## Troubleshooting
+
+### TikZ Compilation Fails
 
 ```bash
-# ログを確認
+# Check the log
 cat compile.log
+
+# Common causes:
+# - Missing LaTeX packages: tlmgr install <package>
+# - External file reference errors: check data/ directory
 ```
 
-**よくある原因:**
-- パッケージが未インストール → `tlmgr install` で追加
-- 外部ファイル参照エラー → data/ ディレクトリが正しくコピーされているか確認
-
-### pandoc 変換失敗
+### Pandoc Conversion Fails
 
 ```bash
-# ログを確認
+# Check the log
 cat pandoc_conversion.log
+
+# Common causes:
+# - Image path issues: verify tikz_png/ directory exists
+# - Encoding issues: ensure UTF-8 encoding
 ```
 
-**よくある原因:**
-- 画像ファイルパス不正 → pandoc のリソースパスを確認
-- Unicode 文字化け → UTF-8 エンコーディングを確認
-
-### LaTeX エラー
+### Images Not Displaying in DOCX
 
 ```bash
-# 前処理ログを確認
-python3 src/preprocess.py main.tex test.tex
+# Verify PNG files were generated
+ls -la tikz_png/
+
+# Check file integrity
+file tikz_png/*.png
 ```
 
-## カスタマイズ
+## Customization
 
-### カスタムコマンド追加
+### Add Custom Commands
 
-`src/preprocess.py` の `replace_ab_brackets()` 関数を拡張してください。
+Edit `src/preprocess.py` to add new command conversions:
 
 ```python
-# 例: \mycommand{...} をサポート
-content = re.sub(r'\\mycommand\{(.+?)\}', r'\\textbf{\1}', content)
+def replace_custom_beamer(content):
+    """Replace beamer commands"""
+    content = re.sub(r'\\alert\{(.+?)\}', r'\\textcolor{red}{\1}', content)
+    return content
+
+# Call in process_tex_file()
+content = replace_custom_beamer(content)
 ```
 
-### TikZ 設定変更
+### Customize TikZ Preamble
 
-`src/extract_tikz_improved.py` で standalone ファイルのプリアンブルをカスタマイズできます。
+Edit `src/extract_tikz_improved.py` to change the standalone document preamble:
 
 ```python
 standalone_content = f"""\\documentclass{{standalone}}
-\\usepackage{{あなたのパッケージ}}
+\\usepackage{{your-custom-package}}
 ...
 """
 ```
 
-## ライセンス
+### Modify Pandoc Options
 
-このプロジェクトは [MIT License](LICENSE) の下で公開されています。
+Edit `src/convert_latex_to_docx.sh` to change pandoc options:
 
-## 貢献
+```bash
+pandoc "$IMAGES_FILE" -o "${OUTPUT_FILE}" \
+    --resource-path=.:tikz_png:data:figures \
+    --number-sections \
+    --toc \
+    --standalone \
+    --citeproc \
+    --bibliography=refs.bib
+```
 
-プルリクエストを歓迎します。大きな変更の場合は、まず Issue を開いて変更内容を議論してください。
+## Examples
 
-## 参考資料
+This repository includes two examples:
 
-- [Pandoc公式ドキュメント](https://pandoc.org/MANUAL.html)
+- **examples/basic/** - Japanese LaTeX document demonstrating Unicode support
+- **examples/english/** - English LaTeX document
+
+Run either example:
+
+```bash
+cd examples/basic
+../../src/convert_latex_to_docx.sh main.tex output.docx
+
+cd ../english
+../../src/convert_latex_to_docx.sh main.tex output.docx
+```
+
+## Future Enhancements
+
+Planned features (see `config.yaml.example`):
+
+- YAML configuration file support
+- Configurable LaTeX engine (pdflatex, lualatex, xelatex)
+- Batch conversion mode
+- Custom stylesheet support for docx output
+
+## License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## References
+
+- [Pandoc Documentation](https://pandoc.org/MANUAL.html)
 - [TikZ & PGFPlots](https://tikz.dev/)
-- [jlreq クラス](https://github.com/abenori/jlreq)
-- [physics2 パッケージ](https://ctan.org/pkg/physics2)
+- [jlreq Class](https://github.com/abenori/jlreq)
+- [physics2 Package](https://ctan.org/pkg/physics2)
 
-## 既知の問題
+## Support
 
-- [ ] ネストした `\ab{...}` のエッジケースで失敗することがある
-- [ ] 非常に大きな TikZ 図のコンパイルが遅い（>30秒）
-
-## 更新履歴
-
-### v0.1.0 (2026-01-15)
-
-初版リリース
-
-**機能:**
-- コマンドライン引数対応
-- 自動ラベル検出
-- TikZ 自動 PNG 変換
-- カスタムコマンド（physics2）対応
-- 日本語文書完全対応
+For bug reports, feature requests, and questions, please open an [Issue](https://github.com/yourusername/latex2docx-converter/issues).
 
 ---
 
-**質問や報告:** [Issues](https://github.com/yourusername/latex2docx-converter/issues) を開いてください
+**Latest Version:** v0.1.0  
+**Last Updated:** 2026-01-15
