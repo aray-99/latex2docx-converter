@@ -29,7 +29,7 @@ If you got dragged into Word against your will: we feel you. If you still choose
 ### System Requirements
 
 - **Python**: 3.10 or higher
-- **LaTeX**: TeX Live or similar (provides `pdflatex`)
+- **LaTeX**: TeX Live recommended (provides `pdflatex`). If you already have LaTeX on Windows/macOS, you can skip this.
 - **ImageMagick**: For PDF to PNG conversion
 - **Pandoc**: For LaTeX to DOCX conversion
 
@@ -37,12 +37,16 @@ If you got dragged into Word against your will: we feel you. If you still choose
 
 ```bash
 sudo apt-get update
-sudo apt-get install texlive-latex-base texlive-latex-extra imagemagick pandoc python3
+sudo apt-get install imagemagick pandoc python3
 ```
+
+Note: For TeX Live on Linux, the official installer (`install-tl`) is recommended over distro packages:
+https://www.tug.org/texlive/doc/install-tl.html
 
 #### macOS (Homebrew)
 
 ```bash
+# Optional if you don't already have LaTeX
 brew install --cask mactex
 brew install imagemagick pandoc python
 ```
