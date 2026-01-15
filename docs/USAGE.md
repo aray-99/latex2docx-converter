@@ -10,7 +10,10 @@ Wordを使わざるを得なくなったLaTeXファンに、深い同情を。 �
 
 1) システム依存（LaTeX / ImageMagick / Pandoc）を入れる
 
-- 詳細は .github/SYSTEM_REQUIREMENTS.md を参照
+- LaTeX（TeX Live）: Windows/macOS は既に入っている人が多いので、困ったときだけでOKです。
+    - Linuxで入れるなら、apt等のディストリビューション同梱版より、公式インストーラ（install-tl）が無難です:
+        https://www.tug.org/texlive/doc/install-tl.html
+- ImageMagick / Pandoc: 詳細は .github/SYSTEM_REQUIREMENTS.md を参照
 
 2) このツールをインストール
 

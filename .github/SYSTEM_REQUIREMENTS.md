@@ -17,7 +17,13 @@ This project requires the following system-level software to be installed.
 **Installation**:
 
 ```bash
-# Ubuntu/Debian
+# Linux (recommended): TeX Live via the official installer (install-tl)
+# Most Windows/macOS users already have LaTeX installed; treat this as a note.
+#
+# Official instructions (install-tl):
+# https://www.tug.org/texlive/doc/install-tl.html
+
+# Ubuntu/Debian (alternative, not ideal): distro packages
 sudo apt-get update
 sudo apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended
 
